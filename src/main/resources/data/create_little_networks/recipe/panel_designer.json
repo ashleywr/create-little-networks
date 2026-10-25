@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "tools",
+  "pattern": [
+    " B ",
+    " E ",
+    " S "
+  ],
+  "key": {
+    "B": { "item": "create:brass_sheet" },
+    "E": { "item": "create:electron_tube" },
+    "S": { "item": "minecraft:stick" }
+  },
+  "result": {
+    "id": "create_little_networks:panel_designer",
+    "count": 1
+  }
+}

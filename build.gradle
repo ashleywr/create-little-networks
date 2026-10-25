@@ -1,0 +1,140 @@
+plugins {
+    id 'net.neoforged.gradle.userdev' version '7.0.171'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+}
+
+group = mod_group
+version = "mc${minecraft_version}-${mod_version}"
+
+base {
+    archivesName = mod_id
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    maven {
+        name = 'Create'
+        url = 'https://maven.createmod.net'
+    }
+    maven {
+        name = 'RegistrateSnapshots'
+        url = 'https://maven.ithundxr.dev/snapshots'
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
+    maven {
+        name = 'BlameJared'
+        url = 'https://maven.blamejared.com'
+    }
+}
+
+def rendererCompatibility = providers.gradleProperty('renderer_compat').get().toBoolean()
+configurations {
+    clientRendererMods {
+        canBeConsumed = false
+        transitive = false
+    }
+}
+
+def littleLogisticsJar = file(little_logistics_jar)
+if (!littleLogisticsJar.exists()) {
+    throw new GradleException("Little Logistics development jar not found at ${littleLogisticsJar}. Run 'gradlew jar' in ../../LittleLogistics/repo first.")
+}
+
+dependencies {
+    implementation "net.neoforged:neoforge:${neoforge_version}"
+
+    implementation files(littleLogisticsJar)
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") {
+        transitive = false
+    }
+    implementation "net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}"
+    compileOnly "dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}"
+    runtimeOnly "dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}"
+    implementation "com.tterrag.registrate:Registrate:${registrate_version}"
+
+    clientRendererMods "maven.modrinth:sodium:${sodium_version}"
+    clientRendererMods "maven.modrinth:iris:${iris_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+}
+
+// NeoGradle's per-run classpath treats these jars as libraries; put them in the client
+// mods directory so NeoForge discovers and loads their render mixins as actual mods.
+def prepareClientRendererMods = tasks.register('prepareClientRendererMods', Copy) {
+    from(configurations.clientRendererMods)
+    into('run/client/mods')
+    rename { name -> name.startsWith('sodium-') ? 'cln-test-sodium.jar' : 'cln-test-iris.jar' }
+}
+
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
+    }
+
+    client {
+        workingDirectory = file(rendererCompatibility ? 'run/client' : 'run/client-vanilla')
+    }
+    server {
+        workingDirectory = file('run/server')
+    }
+}
+
+tasks.matching { it.name == 'runClient' }.configureEach {
+    if (rendererCompatibility) dependsOn prepareClientRendererMods
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    def properties = [
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_version: mod_version,
+        mod_authors: mod_authors,
+        mod_license: mod_license,
+        mod_description: mod_description,
+        minecraft_version_range: minecraft_version_range,
+        neoforge_version_range: neoforge_version_range,
+        loader_version_range: loader_version_range,
+        create_version_range: create_version_range,
+        little_logistics_version_range: little_logistics_version_range
+    ]
+    inputs.properties properties
+    filesMatching(['META-INF/neoforge.mods.toml', 'pack.mcmeta']) {
+        expand properties
+    }
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title': mod_id,
+            'Specification-Vendor': mod_authors,
+            'Specification-Version': '1',
+            'Implementation-Title': project.name,
+            'Implementation-Version': project.version,
+            'Implementation-Vendor': mod_authors
+        ])
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+}

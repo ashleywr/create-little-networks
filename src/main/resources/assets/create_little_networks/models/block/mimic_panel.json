@@ -1,0 +1,21 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "panel": "minecraft:block/quartz_block_side",
+    "particle": "minecraft:block/quartz_block_side"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 14],
+      "to": [16, 16, 16],
+      "faces": {
+        "north": { "texture": "#panel" },
+        "south": { "texture": "#panel" },
+        "east": { "texture": "#panel" },
+        "west": { "texture": "#panel" },
+        "up": { "texture": "#panel" },
+        "down": { "texture": "#panel" }
+      }
+    }
+  ]
+}

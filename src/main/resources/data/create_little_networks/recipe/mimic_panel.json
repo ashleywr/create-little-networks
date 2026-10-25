@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "pattern": [
+    "III",
+    "RCR"
+  ],
+  "key": {
+    "I": { "item": "create:iron_sheet" },
+    "R": { "item": "minecraft:redstone" },
+    "C": { "item": "create:andesite_casing" }
+  },
+  "result": {
+    "id": "create_little_networks:mimic_panel",
+    "count": 4
+  }
+}

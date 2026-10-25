@@ -1,0 +1,17 @@
+{
+  "create_little_networks.schedule.instruction.little_logistics_depot": "Little Logistics Depot",
+  "create_little_networks.schedule.instruction.little_logistics_depot.summary": "Wait at Little Logistics depot",
+  "create_little_networks.routing.loaded": "Loaded package for %s",
+  "create_little_networks.routing.unloaded": "Delivered package to %s",
+  "screen.create_little_networks.network_inspector": "Little Networks Inspector",
+  "screen.create_little_networks.network_inspector.summary": "Summary",
+  "screen.create_little_networks.network_inspector.nodes": "Nodes",
+  "screen.create_little_networks.network_inspector.edges": "Edges",
+  "screen.create_little_networks.network_inspector.logistics": "Logistics",
+  "screen.create_little_networks.network_inspector.hint": "Mouse wheel scrolls • Reopen the chart to refresh • Esc closes",
+  "block.create_little_networks.mimic_panel": "Mimic Panel",
+  "item.create_little_networks.panel_designer": "Panel Designer",
+  "screen.create_little_networks.panel_designer": "Panel Designer",
+  "key.create_little_networks.open_panel_designer": "Open Panel Designer",
+  "key.categories.create_little_networks": "Create: Little Networks"
+}
